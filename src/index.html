@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PapaRuta Los Lagos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+    <header class="hero">
+        <nav class="navbar">
+            <h1><span>PapaRuta</span> Los Lagos</h1>
+        </nav>
+
+        <section class="hero-content">
+            <p class="tag">Turismo gastronómico en la X Región</p>
+            <h2>Recorre la Región de Los Lagos a través de sus Papa John’s</h2>
+            <p>
+                Una experiencia ficticia de turismo urbano que conecta pizza, viaje,
+                fotografía y lugares icónicos del sur de Chile.
+            </p>
+            <a class="button" href="#info">Ver más</a>
+        </section>
+    </header>
+
+    <main>
+        <div class="view-toggle">
+            <button class="view-btn active" data-view="home">Inicio</button>
+            <button class="view-btn" data-view="drivers">Choferes</button>
+            <button class="view-btn" data-view="about">Acerca de</button>
+        </div>
+        <section class="view active-view" id="home-view">
+            <section class="intro" id="info">
+                <h2>¿Qué es PapaRuta?</h2>
+                <img class="route-map" src="./assets/mapa.png" alt="Mapa de conexiones PapaRuta Los Lagos">
+                <p>
+                    PapaRuta Los Lagos es una plataforma turística que invita
+                    a descubrir locales de Papa John’s en la Región de Los Lagos como puntos
+                    de encuentro para viajeros, estudiantes y familias.
+                </p>
+            </section>
+            <section id="locales" class="places">
+
+
+            </section>
+            <section class="cta">
+                <h2>Explora, fotografía y comparte</h2>
+                <p>Nos complace ayudar a familias a encontrar su lugar y ser uno con Papa John's</p>
+                <img src="./assets/clientes_satisfechos.png" alt="Clientes satisfechos con el servicio :D">
+            </section>
+        </section>
+        <section class="view page-view" id="drivers-view">
+            <h2>Información de choferes</h2>
+            <p>
+                Nuestros choferes son los encargados de conectar cada punto de la PapaRuta Los Lagos.
+                Desde la Base de Operaciones Luinux en Los Notros, acompañan los recorridos hacia
+                distintos locales destacados de la región, llegando a los confines más apartados del mundo (Chiloé).
+            </p>
+            <div class="driver-card">
+                <img src="./assets/cristochofer.jpg" alt="Chofer de PapaRuta Los Lagos">
+                <div>
+                    <h3>John Papayón</h3>
+                    <p>
+                        Chofer oficial de PapaRuta Los Lagos. Experto en rutas gastronómicas,
+                        degustación de picsas y expediciones hacia el sur.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section class="view page-view" id="about-view">
+            <h2>Acerca de PapaRuta Los Lagos</h2>
+            <p>
+                PapaRuta Los Lagos es una plataforma de turismo gastronómico con temática principal de Papa John's. El
+                sitio presenta los locales de Papa John's como puntos de interés en toda la región de Los Lagos. Además,
+                tiene un apartado para conocer al chofer y saber más sobre las rutas disponibles.
+            </p>
+        </section>
+    </main>
+    <footer>
+        <p>© 2026 PapaRuta Los Lagos. Todos los derechos reservados. - John Papayon Itself</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
