@@ -50,10 +50,10 @@ resource "aws_security_group" "lambda" {
 
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = var.egress.from_port
+    to_port     = var.egress.to_port
+    protocol    = var.egress.protocol
+    cidr_blocks = var.egress.cidr_blocks
   }
 }
 
@@ -62,17 +62,17 @@ resource "aws_security_group" "alb" {
   vpc_id = aws_vpc.main.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = var.ingress.from_port
+    to_port     = var.ingress.to_port
+    protocol    = var.ingress.protocol
+    cidr_blocks = var.ingress.cidr_blocks
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = var.egress.from_port
+    to_port     = var.egress.to_port
+    protocol    = var.egress.protocol
+    cidr_blocks = var.egress.cidr_blocks
   }
 }
 
@@ -81,18 +81,19 @@ resource "aws_security_group" "fargate" {
   vpc_id = aws_vpc.main.id
 
   ingress {
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
+    from_port       = var.ingress.from_port
+    to_port         = var.ingress.to_port
+    protocol        = var.ingress.protocol
     security_groups = [aws_security_group.alb.id]
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = var.egress.from_port
+    to_port     = var.egress.to_port
+    protocol    = var.egress.protocol
+    cidr_blocks = var.egress.cidr_blocks
   }
+
 }
 
 ## IAM Roles and policies ## es muy similar al ecs_taskrole solo que difiere en una linea
