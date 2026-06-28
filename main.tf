@@ -18,29 +18,31 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_subnet" "a" {
+## Subnets
+
+## creacion de ambas subnets
+resource "aws_subnet" "public" {
+  for_each = {
+    a = ["10.0.1.0/24", "us-east-1a"]
+    b = ["10.0.2.0/24", "us-east-1b"]
+  }
+
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
+  cidr_block        = each.value[0]
+  availability_zone = each.value[1]
 }
 
-resource "aws_subnet" "b" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-east-1b"
-}
+## asociacion de las subnets
+resource "aws_route_table_association" "public" {
+  for_each = aws_subnet.public
 
-resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.a.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table_association" "b" {
-  subnet_id      = aws_subnet.b.id
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
 }
 
 ## Security groups 
+## no se si deberian ser creados con un for each pero lo dejare para el futuro
+## solo cambia el ingress y los nombres
 
 resource "aws_security_group" "lambda" {
   name   = "lambda-sg"
@@ -93,7 +95,7 @@ resource "aws_security_group" "fargate" {
   }
 }
 
-## IAM Roles and policies
+## IAM Roles and policies ## es muy similar al ecs_taskrole solo que difiere en una linea
 
 resource "aws_iam_role" "ecs_execution_role" {
   name = "ecsExecutionRole"
@@ -216,7 +218,7 @@ resource "aws_lb" "app" {
   load_balancer_type = "application"
 
   security_groups = [aws_security_group.alb.id]
-  subnets         = [aws_subnet.a.id, aws_subnet.b.id]
+  subnets         = [aws_subnet.public["a"].id, aws_subnet.public["b"].id]
 }
 
 ## Listener 
@@ -242,7 +244,7 @@ resource "aws_ecs_service" "app" {
   desired_count   = 1
 
   network_configuration {
-    subnets          = [aws_subnet.a.id, aws_subnet.b.id]
+    subnets          = [aws_subnet.public["a"].id, aws_subnet.public["b"].id]
     security_groups  = [aws_security_group.fargate.id]
     assign_public_ip = true
   }
