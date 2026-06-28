@@ -1,7 +1,7 @@
 ## Networking
 
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr
   tags       = { Name = "${var.project}-vpc" }
 }
 
@@ -22,14 +22,14 @@ resource "aws_route_table" "public" {
 
 ## creacion de ambas subnets
 resource "aws_subnet" "public" {
-  for_each = {
-    a = ["10.0.1.0/24", "us-east-1a"]
-    b = ["10.0.2.0/24", "us-east-1b"]
-  }
+  for_each = var.public_subnets
 
   vpc_id            = aws_vpc.main.id
-  cidr_block        = each.value[0]
-  availability_zone = each.value[1]
+  cidr_block        = each.value.cidr
+  availability_zone = each.value.az
+  tags = {
+    Name = "${var.project}-${each.key}"
+  }
 }
 
 ## asociacion de las subnets
@@ -58,7 +58,7 @@ resource "aws_security_group" "lambda" {
 }
 
 resource "aws_security_group" "alb" {
-  name   = "alb-sg"
+  name   = "${var.project}-alb"
   vpc_id = aws_vpc.main.id
 
   ingress {
@@ -150,8 +150,8 @@ resource "aws_iam_policy" "ecs_s3_policy" {
           "s3:ListBucket"
         ],
         Resource = [
-          "arn:aws:s3:::my-bucket",
-          "arn:aws:s3:::my-bucket/*"
+          aws_s3_bucket.datos.arn,
+          "${aws_s3_bucket.datos.arn}/*"
         ]
       }
     ]
@@ -164,7 +164,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_s3_attach" {
 }
 
 resource "aws_ecs_task_definition" "app" {
-  family                   = "my-app"
+  family                   = "${var.project}-task"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = "256"
@@ -176,7 +176,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = "585768150938.dkr.ecr.us-east-1.amazonaws.com/hito1:1.0"
+      image = var.container_image
 
       essential = true
 
@@ -194,13 +194,13 @@ resource "aws_ecs_task_definition" "app" {
 ## ECS
 
 resource "aws_ecs_cluster" "main" {
-  name = "my-cluster"
+  name = "${var.project}-cluster"
 }
 
 ## TG
 
 resource "aws_lb_target_group" "app" {
-  name        = "my-app-tg"
+  name        = "${var.project}-tg"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
@@ -242,7 +242,7 @@ resource "aws_ecs_service" "app" {
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = var.desired_count
 
   network_configuration {
     subnets          = [aws_subnet.public["a"].id, aws_subnet.public["b"].id]
