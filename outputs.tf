@@ -18,7 +18,7 @@ output "subnet_ids" {
     for key, subnet in aws_subnet.public :
     key => subnet.id
   }
-  description = "id de las subredes públicas"
+  description = "ids de las subredes públicas"
 }
 
 output "security_group_ids" {
