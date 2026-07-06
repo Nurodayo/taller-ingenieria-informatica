@@ -294,59 +294,97 @@ resource "aws_lambda_function" "reservas" {
 
 ## API Gateway 
 
-resource "aws_apigatewayv2_api" "reservas" {
-  name          = "reservas-paparuta"
+resource "aws_apigatewayv2_api" "backend" {
+  name          = "backend-paparuta"
   protocol_type = "HTTP"
 }
 
 resource "aws_apigatewayv2_integration" "lambda" {
-  api_id = aws_apigatewayv2_api.reservas.id
+  api_id = aws_apigatewayv2_api.backend.id
 
   integration_type       = "AWS_PROXY"
   integration_uri        = aws_lambda_function.reservas.invoke_arn
   payload_format_version = "2.0"
 }
 
-## ENDPOINTS
+## ENDPOINTS RESERVAS
 ## Podria hacer un objeto para cada endpoint y hacer un for each para crearlos.
 
 resource "aws_apigatewayv2_route" "post_reservas" {
-  api_id = aws_apigatewayv2_api.reservas.id
+  api_id = aws_apigatewayv2_api.backend.id
 
   route_key = "POST /reservas"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
 resource "aws_apigatewayv2_route" "get_reservas" {
-  api_id = aws_apigatewayv2_api.reservas.id
+  api_id = aws_apigatewayv2_api.backend.id
 
   route_key = "GET /reservas"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
 resource "aws_apigatewayv2_route" "getid_reservas" {
-  api_id = aws_apigatewayv2_api.reservas.id
+  api_id = aws_apigatewayv2_api.backend.id
 
   route_key = "GET /reservas/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
 resource "aws_apigatewayv2_route" "put_reservas" {
-  api_id = aws_apigatewayv2_api.reservas.id
+  api_id = aws_apigatewayv2_api.backend.id
 
   route_key = "PUT /reservas/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
 resource "aws_apigatewayv2_route" "delete_reservas" {
-  api_id = aws_apigatewayv2_api.reservas.id
+  api_id = aws_apigatewayv2_api.backend.id
 
   route_key = "DELETE /reservas/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
+## ENDPOINTS RECORRIDOS
+resource "aws_apigatewayv2_route" "post_recorridos" {
+  api_id = aws_apigatewayv2_api.backend.id
+
+  route_key = "POST /recorridos"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "get_recorridos" {
+  api_id = aws_apigatewayv2_api.backend.id
+
+  route_key = "GET /recorridos"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "getid_recorridos" {
+  api_id = aws_apigatewayv2_api.backend.id
+
+  route_key = "GET /recorridos/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "put_recorridos" {
+  api_id = aws_apigatewayv2_api.backend.id
+
+  route_key = "PUT /recorridos/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "delete_recorridos" {
+  api_id = aws_apigatewayv2_api.backend.id
+
+  route_key = "DELETE /recorridos/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+##
+
 resource "aws_apigatewayv2_stage" "default" {
-  api_id = aws_apigatewayv2_api.reservas.id
+  api_id = aws_apigatewayv2_api.backend.id
 
   name        = "$default"
   auto_deploy = true
@@ -359,5 +397,62 @@ resource "aws_lambda_permission" "apigateway" {
   function_name = aws_lambda_function.reservas.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "${aws_apigatewayv2_api.reservas.execution_arn}/*/*"
+  source_arn = "${aws_apigatewayv2_api.backend.execution_arn}/*/*"
+}
+
+## DynamoDB 
+## Yo creo que antes de entregar esta parte podriamos separarlo en otro archivo
+
+## Tables 
+
+resource "aws_dynamodb_table" "recorridos" {
+  name         = "recorridos"
+  billing_mode = "PAY_PER_REQUEST"
+
+  hash_key = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+
+resource "aws_dynamodb_table" "reservas" {
+  name         = "reservas"
+  billing_mode = "PAY_PER_REQUEST"
+
+  hash_key = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+
+resource "aws_iam_policy" "lambda_dynamodb" {
+  name = "LambdaDynamoDB"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      Resource = [
+        aws_dynamodb_table.reservas.arn,
+        aws_dynamodb_table.recorridos.arn
+      ]
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_dynamodb.arn
 }
