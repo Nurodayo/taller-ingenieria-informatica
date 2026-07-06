@@ -191,6 +191,21 @@ resource "aws_ecs_task_definition" "app" {
   ])
 }
 
+resource "aws_iam_role" "lambda_role" {
+  name = "lambdaRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
 ## ECS
 
 resource "aws_ecs_cluster" "main" {
@@ -261,4 +276,88 @@ resource "aws_ecs_service" "app" {
 
 resource "aws_s3_bucket" "datos" {
   bucket = "${var.project}-datos-10"
+}
+
+## Lambda 
+
+resource "aws_lambda_function" "reservas" {
+  function_name = "reservas"
+
+  role = aws_iam_role.lambda_role.arn
+
+  runtime = "python3.12"
+  handler = "lambda_function.lambda_handler"
+
+  filename         = "./lambda/lambda.zip"
+  source_code_hash = filebase64sha256("./lambda/lambda.zip")
+}
+
+## API Gateway 
+
+resource "aws_apigatewayv2_api" "reservas" {
+  name          = "reservas-paparuta"
+  protocol_type = "HTTP"
+}
+
+resource "aws_apigatewayv2_integration" "lambda" {
+  api_id = aws_apigatewayv2_api.reservas.id
+
+  integration_type       = "AWS_PROXY"
+  integration_uri        = aws_lambda_function.reservas.invoke_arn
+  payload_format_version = "2.0"
+}
+
+## ENDPOINTS
+## Podria hacer un objeto para cada endpoint y hacer un for each para crearlos.
+
+resource "aws_apigatewayv2_route" "post_reservas" {
+  api_id = aws_apigatewayv2_api.reservas.id
+
+  route_key = "POST /reservas"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "get_reservas" {
+  api_id = aws_apigatewayv2_api.reservas.id
+
+  route_key = "GET /reservas"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "getid_reservas" {
+  api_id = aws_apigatewayv2_api.reservas.id
+
+  route_key = "GET /reservas/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "put_reservas" {
+  api_id = aws_apigatewayv2_api.reservas.id
+
+  route_key = "PUT /reservas/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "delete_reservas" {
+  api_id = aws_apigatewayv2_api.reservas.id
+
+  route_key = "DELETE /reservas/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_stage" "default" {
+  api_id = aws_apigatewayv2_api.reservas.id
+
+  name        = "$default"
+  auto_deploy = true
+}
+
+
+resource "aws_lambda_permission" "apigateway" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.reservas.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.reservas.execution_arn}/*/*"
 }

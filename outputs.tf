@@ -1,15 +1,15 @@
 output "vpc_id" {
-  value = aws_vpc.main.id
+  value       = aws_vpc.main.id
   description = "id de la vpc"
 }
 
 output "internet_gateway_id" {
-  value = aws_internet_gateway.igw.id
+  value       = aws_internet_gateway.igw.id
   description = "id del internet gateway"
 }
 
 output "route_table_id" {
-  value = aws_route_table.public.id
+  value       = aws_route_table.public.id
   description = "id de la tabla de rutas pública"
 }
 
@@ -66,4 +66,8 @@ output "iam_execution_role_arn" {
 output "iam_task_role_arn" {
   value       = aws_iam_role.ecs_task_role.arn
   description = "arn del task role de ecs"
+}
+
+output "api_url" {
+  value = aws_apigatewayv2_stage.default.invoke_url
 }
