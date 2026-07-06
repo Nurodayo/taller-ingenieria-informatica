@@ -1,15 +1,10 @@
-import chofer from "../assets/cristochofer.jpg";
-
-function Drivers() {
+function Drivers({ driverPhoto, driverName, driverInfo }) {
   return (
     <div className="driver-card">
-      <img src={chofer} alt="Cristofer-chofer-todopoderoso" />
+      <img src={driverPhoto} alt="Cristofer-chofer-todopoderoso" />
       <div>
-        <h3>John Papayón</h3>
-        <p>
-          Chofer oficial de PapaRuta Los Lagos. Experto en rutas gastronómicas y
-          degustación de piczas.
-        </p>
+        <h3>{driverName}</h3>
+        <p>{driverInfo}</p>
       </div>
     </div>
   );
