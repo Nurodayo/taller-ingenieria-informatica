@@ -7,28 +7,29 @@ import uuid
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["RESERVAS_TABLE"])
 
-def reservas_handler(event):
+def recorridos_handler(event):
     method = event["requestContext"]["http"]["method"]
 
     if method == "POST":
-        return crear_reserva(event)
+        return crear_recorrido(event)
     elif method == "GET":
-        return get_reserva(event)
+        return get_recorrido(event)
     elif method == "PUT":
-        return modificar_reserva(event)
+        return modificar_recorrido(event)
     elif method == "DELETE":
-        return delete_reserva(event)
+        return delete_recorrido(event)
 
-def crear_reserva(event):
+def crear_recorrido(event):
     try:
         body = json.loads(event["body"])
 
         item = {
             "id": str(uuid.uuid4()),
             "nombre": body["nombre"],
-            "correo": body["correo"],
             "fecha": body["fecha"],
-            "recorrido": body["recorrido"]
+            "cupos": body["cupos"],
+            "precio": body["precio"],
+            "chofer": body["chofer"]
         }
 
         table.put_item(Item=item)
@@ -40,29 +41,28 @@ def crear_reserva(event):
     except ClientError:
         return{
             "statusCode": 500,
-            "body": json.dumps({"error": "no se pudo crear la reserva"})
+            "body": json.dumps({"error": "no se pudo crear el recorrido"})
         }
 
 
 
-def get_reserva(event):
+def get_recorrido(event):
     try:
-        id = event["pathParameters"]["id"]
-        response = table.get_item(Key={"id": id})
-        item = response.get("Item")
+        response = table.scan()
+        items = response.get("Items", [])
 
         return {
             "statusCode": 200,
-            "body": json.dumps(item)
+            "body": json.dumps(items)
         }
     except ClientError:
         return{
-            "statusCode": 404,
-            "body": json.dumps({"error": "no se encontro la reserva"})
+            "statusCode": 500,
+            "body": json.dumps({"error": "no se pudieron obtener recorridos"})
         }
 
 
-def delete_reserva(event):
+def delete_recorrido(event):
     try:
         id = event["pathParameters"]["id"]
 
@@ -73,33 +73,29 @@ def delete_reserva(event):
 
         return {
             "statusCode": 200,
-            "body": json.dumps({"message": "reserva eliminada"})
+            "body": json.dumps({"message": "recorrido eliminado"})
         }
     except ClientError:
         return{
             "statusCode": 404,
-            "body": json.dumps({"error": "reserva no encontrada"})
+            "body": json.dumps({"error": "recorrido no encontrado"})
         }
 
 
-def modificar_reserva(event):
+def modificar_recorrido(event):
     try:
-        existe = get_reserva(event)
-
-        if existe["statusCode"] == 404:
-            raise Exception("Aparentemente si intentas modifcar un objeto que no existe crea uno nuevo en vez de tirar error")
-
         body = json.loads(event["body"])
         id = event["pathParameters"]["id"]
 
         item = table.update_item(
         Key={"id": id},
-        UpdateExpression="SET nombre = :n, correo = :c, fecha = :f, recorrido = :r",
+            UpdateExpression="SET nombre = :n, fecha = :f, cupos = :c, precio = :p, chofer = :cf",
         ExpressionAttributeValues={
         ":n": body["nombre"],
-        ":c": body["correo"],
         ":f": body["fecha"],
-        ":r": body["recorrido"] 
+        ":c": body["cupos"],
+        ":p": body["precio"],
+        ":cf": body["chofer"]
         },
         ReturnValues="ALL_NEW"
         )
@@ -111,7 +107,7 @@ def modificar_reserva(event):
     except ClientError:
         return{
             "statusCode": 404,
-            "body": json.dumps({"error": "reserva no encontrada"})
+            "body": json.dumps({"error": "recorrido no encontrado"})
         }
 
 
