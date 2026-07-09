@@ -26,10 +26,12 @@ def crear_recorrido(event):
         item = {
             "id": str(uuid.uuid4()),
             "nombre": body["nombre"],
-            "fecha": body["fecha"],
+            "hora": body["hora"],
             "cupos": body["cupos"],
             "precio": body["precio"],
-            "chofer": body["chofer"]
+            "chofer": body["chofer"],
+            "from": body["from"],
+            "to": body["to"]
         }
 
         table.put_item(Item=item)
@@ -88,16 +90,18 @@ def modificar_recorrido(event):
         id = event["pathParameters"]["id"]
 
         item = table.update_item(
-        Key={"id": id},
-            UpdateExpression="SET nombre = :n, fecha = :f, cupos = :c, precio = :p, chofer = :cf",
-        ExpressionAttributeValues={
-        ":n": body["nombre"],
-        ":f": body["fecha"],
-        ":c": body["cupos"],
-        ":p": body["precio"],
-        ":cf": body["chofer"]
-        },
-        ReturnValues="ALL_NEW"
+            Key={"id": id},
+            UpdateExpression="SET nombre = :n, fecha = :h, cupos = :c, precio = :p, chofer = :cf, from = :f, to =:t",
+            ExpressionAttributeValues={
+            ":n": body["nombre"],
+            ":h": body["hora"],
+            ":c": body["cupos"],
+            ":p": body["precio"],
+            ":cf": body["chofer"],
+            ":f": body["from"],
+            ":t": body["to"]
+            },
+            ReturnValues="ALL_NEW"
         )
         return {
             "statusCode": 200,
