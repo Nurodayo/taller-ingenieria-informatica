@@ -278,19 +278,7 @@ resource "aws_s3_bucket" "datos" {
   bucket = "${var.project}-datos-10"
 }
 
-## Lambda 
 
-resource "aws_lambda_function" "reservas" {
-  function_name = "reservas"
-
-  role = aws_iam_role.lambda_role.arn
-
-  runtime = "python3.12"
-  handler = "lambda_function.lambda_handler"
-
-  filename         = "./lambda/lambda.zip"
-  source_code_hash = filebase64sha256("./lambda/lambda.zip")
-}
 
 ## API Gateway 
 
@@ -455,4 +443,25 @@ resource "aws_iam_policy" "lambda_dynamodb" {
 resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_dynamodb.arn
+}
+
+## Lambda 
+
+resource "aws_lambda_function" "reservas" {
+  function_name = "reservas"
+
+  role = aws_iam_role.lambda_role.arn
+
+  runtime = "python3.12"
+  handler = "lambda_function.lambda_handler"
+
+  filename         = "./lambda/lambda.zip"
+  source_code_hash = filebase64sha256("./lambda/lambda.zip")
+
+  environment {
+    variables = {
+      RESERVAS_TABLE   = aws_dynamodb_table.reservas.name
+      RECORRIDOS_TABLE = aws_dynamodb_table.recorridos.name
+    }
+  }
 }
