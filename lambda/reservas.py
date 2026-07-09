@@ -37,7 +37,8 @@ def crear_reserva(event):
             "statusCode": 201,
             "body": json.dumps(item)
         }
-    except ClientError:
+    except Exception as e:
+        print(e)
         return{
             "statusCode": 500,
             "body": json.dumps({"error": "no se pudo crear la reserva"})
@@ -55,7 +56,8 @@ def get_reserva(event):
             "statusCode": 200,
             "body": json.dumps(item)
         }
-    except ClientError:
+    except Exception as e:
+        print(e)
         return{
             "statusCode": 404,
             "body": json.dumps({"error": "no se encontro la reserva"})
@@ -75,7 +77,8 @@ def delete_reserva(event):
             "statusCode": 200,
             "body": json.dumps({"message": "reserva eliminada"})
         }
-    except ClientError:
+    except Exception as e:
+        print(e)
         return{
             "statusCode": 404,
             "body": json.dumps({"error": "reserva no encontrada"})
@@ -108,7 +111,8 @@ def modificar_reserva(event):
             "body": json.dumps(item["Attributes"])
         }
 
-    except ClientError:
+    except Exception as e:
+        print(e)
         return{
             "statusCode": 404,
             "body": json.dumps({"error": "reserva no encontrada"})

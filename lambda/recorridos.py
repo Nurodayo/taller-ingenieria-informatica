@@ -40,7 +40,8 @@ def crear_recorrido(event):
             "statusCode": 201,
             "body": json.dumps(item)
         }
-    except ClientError:
+    except Exception as e:
+        print(e)
         return{
             "statusCode": 500,
             "body": json.dumps({"error": "no se pudo crear el recorrido"})
@@ -57,7 +58,8 @@ def get_recorrido(event):
             "statusCode": 200,
             "body": json.dumps(items)
         }
-    except ClientError:
+    except Exception as e:
+        print(e)
         return{
             "statusCode": 500,
             "body": json.dumps({"error": "no se pudieron obtener recorridos"})
@@ -77,7 +79,8 @@ def delete_recorrido(event):
             "statusCode": 200,
             "body": json.dumps({"message": "recorrido eliminado"})
         }
-    except ClientError:
+    except Exception as e:
+        print(e)
         return{
             "statusCode": 404,
             "body": json.dumps({"error": "recorrido no encontrado"})
@@ -108,7 +111,8 @@ def modificar_recorrido(event):
             "body": json.dumps(item["Attributes"])
         }
 
-    except ClientError:
+    except Exception as e:
+        print(e)
         return{
             "statusCode": 404,
             "body": json.dumps({"error": "recorrido no encontrado"})
