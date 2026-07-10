@@ -5,7 +5,7 @@ import uuid
 
 ## No se si utilizaremos todos los endpoints pero estan alli por si acaso
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table(os.environ["RESERVAS_TABLE"])
+table = dynamodb.Table(os.environ["RECORRIDOS_TABLE"])
 
 def recorridos_handler(event):
     method = event["requestContext"]["http"]["method"]
