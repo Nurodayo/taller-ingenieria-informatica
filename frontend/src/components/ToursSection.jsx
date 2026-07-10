@@ -1,9 +1,16 @@
+import { useEffect, useState } from "react";
 import TourCard from "./TourCard";
-import tours from "../data/tours";
+import { getRecorridos } from "../../../services/api";
 
 function ToursSection() {
+  const [tours, setTours] = useState([]);
+  useEffect(() => {
+    getRecorridos()
+      .then((data) => setTours(data))
+      .catch((error) => console.error(error));
+  }, []);
   const handleReserve = (tour) => {
-    alert(`:0 ${tour.title}`);
+    alert(`:0 ${tour.nombre}`);
   };
   return (
     <section className="tours-section">
@@ -12,12 +19,11 @@ function ToursSection() {
         {tours.map((tour) => (
           <TourCard
             key={tour.id}
-            title={tour.title}
+            title={tour.nombre}
             from={tour.from}
             to={tour.to}
-            duration={tour.duration}
-            price={tour.price}
-            image={tour.image}
+            duration={tour.hora}
+            price={tour.precio}
             onReserve={() => handleReserve(tour)}
           />
         ))}
