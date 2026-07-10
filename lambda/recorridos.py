@@ -56,7 +56,7 @@ def get_recorrido(event):
 
         return {
             "statusCode": 200,
-            "body": json.dumps(items)
+            "body": json.dumps(items, default=int)
         }
     except Exception as e:
         print(e)
