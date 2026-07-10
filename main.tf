@@ -285,6 +285,14 @@ resource "aws_s3_bucket" "datos" {
 resource "aws_apigatewayv2_api" "backend" {
   name          = "backend-paparuta"
   protocol_type = "HTTP"
+
+  cors_configuration {
+    allow_origins  = ["*"] # inseguro
+    allow_methods  = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allow_headers  = ["Content-Type", "Authorization"]
+    expose_headers = ["*"]
+    max_age        = 300
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda" {
