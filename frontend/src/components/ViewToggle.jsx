@@ -8,6 +8,12 @@ function ViewToggle({ view, setView }) {
         Inicio
       </button>
       <button
+        className={`view-btn ${view === "tours" ? "active" : ""}`}
+        onClick={() => setView("tours")}
+      >
+        Recorridos
+      </button>
+      <button
         className={`view-btn ${view === "drivers" ? "active" : ""}`}
         onClick={() => setView("drivers")}
       >
@@ -22,5 +28,4 @@ function ViewToggle({ view, setView }) {
     </div>
   );
 }
-
 export default ViewToggle;

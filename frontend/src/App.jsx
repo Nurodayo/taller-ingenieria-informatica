@@ -10,7 +10,7 @@ import chofer1 from "./assets/cristochofer.jpg";
 import chofer2 from "./assets/andresfeliz.png";
 import chofer3 from "./assets/pibechofertraductorchino.png";
 import chofer4 from "./assets/pibexbenja.png";
-
+import ToursSection from "./components/ToursSection.jsx";
 import "./App.css";
 
 function App() {
@@ -22,6 +22,7 @@ function App() {
       <main>
         <ViewToggle view={view} setView={setView} />
         {view === "home" && <Home />}
+        {view === "tours" && <ToursSection />}
         {view === "drivers" && (
           <section className="page-view">
             <h2>Información de choferes</h2>
