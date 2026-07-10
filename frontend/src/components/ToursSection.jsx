@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import TourCard from "./TourCard";
 import { getRecorridos } from "../../../services/api";
 import ReservationForm from "./ReservationForm";
+import ReservationsHistory from "./ReservationHistory";
 function ToursSection() {
   const [tours, setTours] = useState([]);
   const [selectedTour, setSelectedTour] = useState(null);
@@ -46,6 +47,7 @@ function ToursSection() {
           onClose={() => setSelectedTour(null)}
         />
       )}
+      <ReservationsHistory />
     </section>
   );
 }

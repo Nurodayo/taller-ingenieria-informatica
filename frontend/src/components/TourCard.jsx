@@ -1,4 +1,4 @@
-function TourCard({ title, from, to, duration, price, image, onReserve }) {
+function TourCard({ title, from, to, hour, price, image, onReserve }) {
   return (
     <div className="tour-card">
       <img src={image} alt={title} className="tour-image" />
@@ -8,7 +8,7 @@ function TourCard({ title, from, to, duration, price, image, onReserve }) {
           <strong>Ruta:</strong> {from} → {to}
         </p>
         <p>
-          <strong>Duración:</strong> {duration}
+          <strong>Hora:</strong> {hour}
         </p>
         <p className="tour-price">${price.toLocaleString("es-CL")}</p>
         <button className="reserve-button" onClick={onReserve}>

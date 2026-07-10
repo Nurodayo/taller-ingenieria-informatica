@@ -5,7 +5,6 @@ function ReservationForm({ recorrido }) {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [fecha, setFecha] = useState("");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -16,11 +15,24 @@ function ReservationForm({ recorrido }) {
         recorrido: recorrido.nombre,
       });
       console.log(reserva);
-
       alert("Reserva realizada correctamente.");
       setNombre("");
       setCorreo("");
       setFecha("");
+
+      // Esto es para guardar el historial en localStorage :0
+      const historial = JSON.parse(localStorage.getItem("reservas")) || [];
+      historial.push({
+        id: reserva.id,
+        nombre,
+        correo,
+        fecha,
+        recorrido: recorrido.nombre,
+        from: recorrido.from,
+        to: recorrido.to,
+        hora: recorrido.hora,
+      });
+      localStorage.setItem("reservas", JSON.stringify(historial));
     } catch (error) {
       console.error(error);
       alert("No se pudo crear la reserva.");
