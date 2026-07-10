@@ -21,7 +21,7 @@ function App() {
       <Hero />
       <main>
         <ViewToggle view={view} setView={setView} />
-        {view === "home" && <Home />}
+        {view === "home" && <Home setView={setView} />}
         {view === "tours" && <ToursSection />}
         {view === "drivers" && (
           <section className="page-view">
