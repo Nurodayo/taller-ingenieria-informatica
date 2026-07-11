@@ -15,7 +15,7 @@ variable "vpc_cidr" {
 }
 variable "container_image" {
   type        = string
-  default     = "585768150938.dkr.ecr.us-east-1.amazonaws.com/hito1:1.0"
+  default     = "585768150938.dkr.ecr.us-east-1.amazonaws.com/hito1:1.1"
   description = "Imagen Docker del contenedor"
 }
 variable "desired_count" {
