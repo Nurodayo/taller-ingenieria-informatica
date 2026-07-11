@@ -278,6 +278,46 @@ resource "aws_s3_bucket" "datos" {
   bucket = "${var.project}-datos-10"
 }
 
+resource "aws_s3_object" "assets" {
+  for_each = fileset("${path.module}/bucket", "**")
+
+  bucket = aws_s3_bucket.datos.id
+  key    = each.value
+  source = "${path.module}/bucket/${each.value}"
+
+  etag = filemd5("${path.module}/bucket/${each.value}")
+}
+
+## Tienen que ser publicos para que podamos ver a nuestros choferes
+## somos los unicos que podemos subir imagenes al bucket pero todos lo pueden ver
+
+resource "aws_s3_bucket_public_access_block" "datos" {
+  bucket = aws_s3_bucket.datos.id
+
+  block_public_acls       = false
+  ignore_public_acls      = false
+  block_public_policy     = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "datos_public" {
+  bucket = aws_s3_bucket.datos.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicRead"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.datos.arn}/*"
+      }
+    ]
+  })
+
+  depends_on = [aws_s3_bucket_public_access_block.datos]
+}
 
 
 ## API Gateway 
@@ -394,6 +434,33 @@ resource "aws_lambda_permission" "apigateway" {
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_apigatewayv2_api.backend.execution_arn}/*/*"
+}
+
+## Dominio custom de la API 
+
+resource "aws_apigatewayv2_domain_name" "api" {
+  domain_name = var.api_domain_name
+
+  domain_name_configuration {
+    certificate_arn = aws_acm_certificate_validation.api.certificate_arn
+    endpoint_type   = "REGIONAL"
+    security_policy = "TLS_1_2"
+  }
+}
+
+resource "aws_acm_certificate" "api" {
+  domain_name       = var.api_domain_name
+  validation_method = "DNS"
+}
+
+resource "aws_acm_certificate_validation" "api" {
+  certificate_arn = aws_acm_certificate.api.arn
+}
+
+resource "aws_apigatewayv2_api_mapping" "api" {
+  api_id      = aws_apigatewayv2_api.backend.id
+  domain_name = aws_apigatewayv2_domain_name.api.id
+  stage       = aws_apigatewayv2_stage.default.id
 }
 
 ## DynamoDB 

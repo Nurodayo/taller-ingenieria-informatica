@@ -71,3 +71,10 @@ variable "ingress" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+variable "api_domain_name" {
+  description = "Dominio de la API"
+  type        = string
+
+  default = "api.maidkissa.moe"
+}
