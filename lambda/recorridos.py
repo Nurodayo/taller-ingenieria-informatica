@@ -2,6 +2,7 @@ import os
 import boto3
 import json
 import uuid
+from urllib.parse import quote_plus
 
 ## No se si utilizaremos todos los endpoints pero estan alli por si acaso
 dynamodb = boto3.resource("dynamodb")
@@ -22,18 +23,68 @@ def recorridos_handler(event):
 def crear_recorrido(event):
     try:
         body = json.loads(event["body"])
+        
+       
+        ## Campos obligatorios de los recorridos
+        campos = [
+            "nombre",
+            "hora",
+            "cupos",
+            "precio",
+            "chofer",
+            "from",
+            "to"
+        ]
+     
+        ## Default image
 
+        if not body.get("image"):
+            image = f"https://placehold.co/600x400?text={quote_plus(body["nombre"])}"
+        elif body["image"] == "":
+            image = f"https://placehold.co/600x400?text={quote_plus(body["nombre"])}"
+        else:
+            image = body["image"]
+
+        ## Validacion de precios y cupos
+
+        if body["cupos"] <= 0:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "Los cupos deben ser un entero mayor que 0"})
+            }
+
+        # Validar precio
+        if body["precio"] < 0:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "El precio debe ser un número mayor o igual a 0"})
+            }
+
+        ## Objeto a postear
         item = {
             "id": str(uuid.uuid4()),
             "nombre": body["nombre"],
             "hora": body["hora"],
             "cupos": body["cupos"],
             "precio": body["precio"],
+            "image": image,
             "chofer": body["chofer"],
             "from": body["from"],
             "to": body["to"]
         }
 
+        ## verificar campos obligatorios
+        faltantes = [c for c in campos if c not in body]
+        
+        if faltantes:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({
+                    "error": f"Faltan los campos: {', '.join(faltantes)}"
+                })
+            }
+        
+        ## Imagen default 
         table.put_item(Item=item)
 
         return {
@@ -51,6 +102,30 @@ def crear_recorrido(event):
 
 def get_recorrido(event):
     try:
+        path_params = event.get("pathParameters")
+
+        if path_params and path_params.get("id"):
+            response = table.get_item(
+                Key={
+                    "id": path_params["id"]
+                }
+            )
+
+            item = response.get("Item")
+
+            if not item:
+                return {
+                    "statusCode": 404,
+                    "body": json.dumps({"error": "Recorrido no encontrado"})
+                }
+
+            return {
+                "statusCode": 200,
+                "body": json.dumps(item, default=int)
+            }
+
+        ## GET recorridos/
+
         response = table.scan()
         items = response.get("Items", [])
 
