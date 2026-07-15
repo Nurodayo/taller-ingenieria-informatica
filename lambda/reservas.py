@@ -30,28 +30,18 @@ def crear_reserva(event):
             "nombre": body["nombre"],
             "correo": body["correo"],
             "fecha": body["fecha"],
-            "Asientos": body["Asientos"],
+            "asientos": body["asientos"],
             "recorrido": body["recorrido"]
         }
 
-        recorrido = recorridos_table.get_item(
-            Key={"id": body["recorrido"]}
+        recorridos_table.update_item(
+            Key={"id": body["recorrido"]},
+            UpdateExpression="SET cupos = cupos - :a",
+            ConditionExpression="cupos >= :a",
+            ExpressionAttributeValues={
+                ":a": body["asientos"]
+            }
         )
-        recorrido = recorrido.get("Item")
-
-        ## Valudacion de asientos
-        if body["Asientos"] > recorrido["cupos"]:
-            return {
-                "statusCode": 400,
-                "body": json.dumps({"error": "No hay suficientes cupos"})
-            }
-
-        if not recorrido:
-            return {
-                "statusCode": 404,
-                "body": json.dumps({"error": "Recorrido no encontrado"})
-            }
-
 
         ## POST
 
@@ -61,12 +51,14 @@ def crear_reserva(event):
             "statusCode": 201,
             "body": json.dumps(item)
         }
-    except Exception as e:
-        print(e)
-        return{
-            "statusCode": 500,
-            "body": json.dumps({"error": "no se pudo crear la reserva"})
-        }
+        ## La ultima vez que intente usar ClientError no funco aver si funca, pusheo despues testeo
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "No hay suficientes cupos"})
+            }
+        raise
 
 ## Algo que podria fallar es que hayan tantas reservas o recorridos que al hacer get/ hayan demasiados objetos que colapse, es una demostracion no pasara
 
