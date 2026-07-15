@@ -53,7 +53,7 @@ function ReservationForm({ recorrido }) {
         <form className="reservation-form" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Tu nombre"
+            placeholder="Nombre"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             required

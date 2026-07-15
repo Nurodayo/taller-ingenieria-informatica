@@ -35,6 +35,7 @@ function ToursSection() {
               to={tour.to}
               duration={tour.hora}
               price={tour.precio}
+              image={tour.image}
               onReserve={() => handleReserve(tour)}
             />
           ))}

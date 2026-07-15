@@ -290,6 +290,51 @@ footer {
   padding: 96px 24px;
   text-align: center;
 }
+.about-card {
+  max-width: 1000px;
+  margin: 40px auto 0;
+  background: white;
+  overflow: hidden;
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.12),
+    0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.about-image {
+  width: 100%;
+  object-fit: contain;
+  background: linear-gradient(135deg, #f8f3ea, #ffffff);
+  display: block;
+}
+
+.about-content {
+  padding: 40px;
+  text-align: center;
+}
+
+.about-content h3 {
+  color: #c8102e;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.about-content p {
+  max-width: 700px;
+  margin: 0 auto 20px auto;
+  font-size: 1.1rem;
+  color: #444;
+  line-height: 1.8;
+}
+
+.about-highlight {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 14px 24px;
+  border-radius: 999px;
+  background: rgba(11, 93, 30, 0.1);
+  color: #0b5d1e;
+  font-weight: 700;
+}
 .page-view h2 {
   font-size: clamp(2rem, 4vw, 3rem);
   color: #0b5d1e;
