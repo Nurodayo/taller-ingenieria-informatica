@@ -638,12 +638,18 @@ resource "aws_lambda_function" "reservas" {
   }
 }
 
+## Son distintos porque no necesitan el mismo entorno
+
 resource "aws_lambda_function" "authorizer" {
   function_name = "paparuta-authorizer"
 
   role = aws_iam_role.ecs_task_role.arn
 
-  # runtime, role, handler, filename, etc.
+  runtime = "python3.12"
+  handler = "lambda_function.lambda_handler"
+
+  filename         = "./lambda/lambda.zip"
+  source_code_hash = filebase64sha256("./lambda/lambda.zip")
 
   environment {
     variables = {

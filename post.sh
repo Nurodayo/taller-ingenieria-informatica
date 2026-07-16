@@ -5,7 +5,7 @@ curl -X POST https://api.maidkissa.moe/recorridos \
   -H "Content-Type: application/json" \
   -d '{
   "nombre": "Paparuta",
-  "hora": "10:00 AM", 
+  "hora": "2026-07-23T10:00:00", 
   "cupos": 40,
   "precio": 3990,
   "image": "https://hito1-leo-emi-datos-10.s3.us-east-1.amazonaws.com/andresfeliz.png",
@@ -19,7 +19,7 @@ curl -X POST https://api.maidkissa.moe/recorridos \
   -H "Content-Type: application/json" \
   -d '{
   "nombre": "La ruta del Dragon",
-  "hora": "12:00 PM", 
+  "hora": "2026-07-20T14:00:00", 
   "cupos": 30,
   "precio": 12990,
   "image": "https://hito1-leo-emi-datos-10.s3.us-east-1.amazonaws.com/rutadeldragon.jpeg",
@@ -33,7 +33,7 @@ curl -X POST https://api.maidkissa.moe/recorridos \
   -H "Content-Type: application/json" \
   -d '{
   "nombre": "Ruta Boliviana",
-  "hora": "2:00 PM", 
+  "hora": "2027-02-24T11:00:00", 
   "cupos": 5,
   "precio": 9990,
   "image": "https://hito1-leo-emi-datos-10.s3.us-east-1.amazonaws.com/rutacangri.jpeg",
@@ -47,7 +47,7 @@ curl -X POST https://api.maidkissa.moe/recorridos \
   -H "Content-Type: application/json" \
   -d '{
   "nombre": "Ruta del Salmon",
-  "hora": "9:30 AM", 
+  "hora": "2027-01-11T7:30:00"", 
   "cupos": 40,
   "precio": 2490,
   "image": "https://hito1-leo-emi-datos-10.s3.us-east-1.amazonaws.com/rutasalmonera.jpeg",
