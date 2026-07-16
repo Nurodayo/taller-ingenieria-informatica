@@ -1,11 +1,4 @@
-import { useEffect, useState } from "react";
-
-function ReservationsHistory() {
-  const [reservas, setReservas] = useState([]);
-  useEffect(() => {
-    const historial = JSON.parse(localStorage.getItem("reservas")) || [];
-    setReservas(historial);
-  }, []);
+function ReservationsHistory({ reservas }) {
   if (reservas.length === 0) {
     return (
       <section className="history-section">
@@ -14,22 +7,28 @@ function ReservationsHistory() {
       </section>
     );
   }
+
   return (
     <section className="history-section">
       <h2>Tus reservas</h2>
+
       <div className="history-grid">
-        {reservas.map((reserva, index) => (
-          <div className="history-card" key={index}>
+        {reservas.map((reserva) => (
+          <div className="history-card" key={reserva.id}>
             <h3>{reserva.recorrido}</h3>
+
             <p>
               <strong>Nombre:</strong> {reserva.nombre}
             </p>
+
             <p>
               <strong>Fecha:</strong> {reserva.fecha}
             </p>
+
             <p>
               {reserva.from} → {reserva.to}
             </p>
+
             <p>{reserva.hora}</p>
           </div>
         ))}
@@ -37,4 +36,5 @@ function ReservationsHistory() {
     </section>
   );
 }
+
 export default ReservationsHistory;

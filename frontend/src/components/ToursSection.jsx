@@ -16,6 +16,9 @@ function ToursSection() {
   const handleReserve = (tour) => {
     setSelectedTour(tour);
   };
+  const [reservas, setReservas] = useState(() => {
+    return JSON.parse(localStorage.getItem("reservas")) || [];
+  });
   return (
     <section className="tours-section">
       <h2>Recorridos disponibles</h2>
@@ -46,9 +49,12 @@ function ToursSection() {
         <ReservationForm
           recorrido={selectedTour}
           onClose={() => setSelectedTour(null)}
+          reservas={reservas}
+          setReservas={setReservas}
         />
       )}
-      <ReservationsHistory />
+
+      <ReservationsHistory reservas={reservas} />
     </section>
   );
 }

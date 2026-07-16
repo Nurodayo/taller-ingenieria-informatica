@@ -1,29 +1,21 @@
 import { useState } from "react";
 import { crearReserva } from "../../../services/api";
 
-function ReservationForm({ recorrido }) {
+function ReservationForm({ recorrido, onClose, reservas, setReservas }) {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [fecha, setFecha] = useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const reserva = await crearReserva({
+      const reservaCreada = await crearReserva({
         nombre,
         correo,
         fecha,
         recorrido: recorrido.nombre,
       });
-      console.log(reserva);
-      alert("Reserva realizada correctamente.");
-      setNombre("");
-      setCorreo("");
-      setFecha("");
-
-      // Esto es para guardar el historial en localStorage :0
-      const historial = JSON.parse(localStorage.getItem("reservas")) || [];
-      historial.push({
-        id: reserva.id,
+      const nuevaReserva = {
+        id: reservaCreada.id,
         nombre,
         correo,
         fecha,
@@ -31,8 +23,15 @@ function ReservationForm({ recorrido }) {
         from: recorrido.from,
         to: recorrido.to,
         hora: recorrido.hora,
-      });
-      localStorage.setItem("reservas", JSON.stringify(historial));
+      };
+      const nuevoHistorial = [...reservas, nuevaReserva];
+      setReservas(nuevoHistorial);
+      localStorage.setItem("reservas", JSON.stringify(nuevoHistorial));
+      alert("Reserva realizada correctamente.");
+      setNombre("");
+      setCorreo("");
+      setFecha("");
+      onClose();
     } catch (error) {
       console.error(error);
       alert("No se pudo crear la reserva.");
