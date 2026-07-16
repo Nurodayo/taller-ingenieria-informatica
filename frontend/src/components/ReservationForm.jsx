@@ -1,7 +1,13 @@
 import { useState } from "react";
-import { crearReserva } from "../../../services/api";
+import { crearReserva, getRecorridos } from "../../../services/api";
 
-function ReservationForm({ recorrido, onClose, reservas, setReservas }) {
+function ReservationForm({
+  recorrido,
+  onClose,
+  reservas,
+  setReservas,
+  setTours,
+}) {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [fecha, setFecha] = useState("");
@@ -12,7 +18,8 @@ function ReservationForm({ recorrido, onClose, reservas, setReservas }) {
         nombre,
         correo,
         fecha,
-        recorrido: recorrido.nombre,
+        asientos: 1,
+        recorrido: recorrido.id,
       });
       const nuevaReserva = {
         id: reservaCreada.id,
@@ -27,6 +34,8 @@ function ReservationForm({ recorrido, onClose, reservas, setReservas }) {
       const nuevoHistorial = [...reservas, nuevaReserva];
       setReservas(nuevoHistorial);
       localStorage.setItem("reservas", JSON.stringify(nuevoHistorial));
+      const recorridosActualizados = await getRecorridos();
+      setTours(recorridosActualizados);
       alert("Reserva realizada correctamente.");
       setNombre("");
       setCorreo("");

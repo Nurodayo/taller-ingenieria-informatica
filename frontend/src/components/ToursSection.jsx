@@ -22,7 +22,6 @@ function ToursSection() {
   return (
     <section className="tours-section">
       <h2>Recorridos disponibles</h2>
-
       {loading ? (
         <div className="loading-container">
           <div className="spinner"></div>
@@ -39,21 +38,21 @@ function ToursSection() {
               hour={tour.hora}
               price={tour.precio}
               image={tour.image}
+              seats={tour.cupos}
               onReserve={() => handleReserve(tour)}
             />
           ))}
         </div>
       )}
-
       {selectedTour && (
         <ReservationForm
           recorrido={selectedTour}
           onClose={() => setSelectedTour(null)}
           reservas={reservas}
           setReservas={setReservas}
+          setTours={setTours}
         />
       )}
-
       <ReservationsHistory reservas={reservas} />
     </section>
   );

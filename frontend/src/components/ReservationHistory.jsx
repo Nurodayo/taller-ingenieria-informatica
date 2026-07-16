@@ -7,28 +7,22 @@ function ReservationsHistory({ reservas }) {
       </section>
     );
   }
-
   return (
     <section className="history-section">
       <h2>Tus reservas</h2>
-
       <div className="history-grid">
         {reservas.map((reserva) => (
           <div className="history-card" key={reserva.id}>
             <h3>{reserva.recorrido}</h3>
-
             <p>
               <strong>Nombre:</strong> {reserva.nombre}
             </p>
-
             <p>
               <strong>Fecha:</strong> {reserva.fecha}
             </p>
-
             <p>
               {reserva.from} → {reserva.to}
             </p>
-
             <p>{reserva.hora}</p>
           </div>
         ))}
@@ -36,5 +30,4 @@ function ReservationsHistory({ reservas }) {
     </section>
   );
 }
-
 export default ReservationsHistory;

@@ -8,9 +8,10 @@ function Home({ setView }) {
         <h2>¿Qué es PapaRuta?</h2>
         <img className="route-map" src={mapa} alt="Mapa PapaRuta" />
         <p>
-          PapaRuta Los Lagos es una plataforma turística que invita a descubrir
-          locales de Papa John's en la Región de Los Lagos como puntos de
-          encuentro para viajeros, estudiantes y familias.
+          PapaRuta Los Lagos es una plataforma de turismo gastronómico
+          patrocinada por Papa John's que conecta a viajeros, estudiantes y
+          familias con restaurantes y sabores emblemáticos de la Región de Los
+          Lagos.
         </p>
       </section>
       <section className="reservation-preview">
@@ -21,7 +22,7 @@ function Home({ setView }) {
             Región de Los Lagos acompañado por nuestros choferes certificados.
           </p>
           <div className="reservation-features">
-            <div className="feature">Visita múltiples locales Papa John's</div>
+            <div className="feature">Visita múltiples restaurantes</div>
             <div className="feature">Transporte incluido</div>
             <div className="feature">Paradas turísticas y fotográficas</div>
           </div>
