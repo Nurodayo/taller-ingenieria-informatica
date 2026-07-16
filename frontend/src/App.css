@@ -87,24 +87,22 @@ body {
   margin: 0 auto;
   padding: 64px 24px;
 }
-
 .intro {
   max-width: 1000px;
   margin: 0 auto;
   padding: 72px 24px;
   text-align: center;
 }
-
 .intro h2 {
   font-size: clamp(2rem, 4vw, 3rem);
   color: #0b5d1e;
   margin-bottom: 28px;
 }
-
+/* Home */
 .route-map {
   width: min(100%, 750px);
   display: block;
-  margin: 0 auto 32px;
+  margin: 0 auto 40px;
   border-radius: 28px;
   padding: 14px;
   background: linear-gradient(135deg, #ffffff, #f8f3ea);
@@ -123,14 +121,18 @@ body {
     0 32px 65px rgba(0, 0, 0, 0.18),
     0 12px 25px rgba(200, 16, 46, 0.18);
 }
-
+.intro h2,
+.cta h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #0b5d1e;
+  margin-bottom: 24px;
+}
 .intro p {
   max-width: 760px;
-  margin: 0 auto;
+  margin: 0 auto 40px;
   font-size: 1.1rem;
   color: #333;
 }
-
 @keyframes mapFloat {
   0% {
     transform: translateY(0);
@@ -142,14 +144,37 @@ body {
     transform: translateY(0);
   }
 }
-
-.intro h2,
-.cta h2 {
-  font-size: 2rem;
-  margin-bottom: 16px;
-  color: #0b5d1e;
+.stats-section {
+  max-width: 1050px;
+  margin: 80px auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
 }
-
+.stat-card {
+  background: white;
+  border-radius: 24px;
+  padding: 36px 24px;
+  text-align: center;
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease;
+}
+.stat-card:hover {
+  transform: translateY(-6px);
+}
+.stat-card h3 {
+  font-size: 3rem;
+  color: #c8102e;
+  margin-bottom: 12px;
+}
+.stat-card p {
+  color: #555;
+  font-size: 1.05rem;
+}
+/* TourCard */
 .cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -592,32 +617,27 @@ footer {
     transform: rotate(360deg);
   }
 }
-
 .history-section {
   max-width: 1100px;
   margin: 60px auto;
   padding: 0 24px;
 }
-
 .history-section h2 {
   text-align: center;
   color: #0b5d1e;
   margin-bottom: 30px;
 }
-
 .history-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
 }
-
 .history-card {
   background: white;
   padding: 24px;
   border-radius: 20px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
-
 .history-card h3 {
   color: #c8102e;
   margin-bottom: 12px;

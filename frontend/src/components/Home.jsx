@@ -34,6 +34,24 @@ function Home({ setView }) {
           </button>
         </div>
       </section>
+      <section className="stats-section">
+        <div className="stat-card">
+          <h3>12+</h3>
+          <p>Restaurantes asociados</p>
+        </div>
+        <div className="stat-card">
+          <h3>4</h3>
+          <p>Recorridos gastronómicos</p>
+        </div>
+        <div className="stat-card">
+          <h3>3+</h3>
+          <p>Viajeros satisfechos</p>
+        </div>
+        <div className="stat-card">
+          <h3>8</h3>
+          <p>Destinos en la X Región</p>
+        </div>
+      </section>
       <section className="cta">
         <h2>Explora, fotografía y comparte</h2>
         <p>
