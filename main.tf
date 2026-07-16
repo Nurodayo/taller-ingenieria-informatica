@@ -1,7 +1,8 @@
 ## Docker 
 
 resource "aws_ecr_repository" "app" {
-  name = "var.project"
+  name         = var.project
+  force_delete = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -10,7 +11,6 @@ resource "aws_ecr_repository" "app" {
 
 data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {}
 
 resource "terraform_data" "docker_build" {
   depends_on = [
@@ -19,17 +19,16 @@ resource "terraform_data" "docker_build" {
 
   provisioner "local-exec" {
     command = <<EOF
-      aws ecr get-login-password --region ${data.aws_region.current.name} | \
-      docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com
+aws ecr get-login-password --region ${var.region} | \
+docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com
 
-      docker build -t mi-app .
+docker build -t mi-app .
 
-      docker tag proyecto:1.2 ${aws_ecr_repository.app.repository_url}:1.2
+docker tag mi-app:latest ${aws_ecr_repository.app.repository_url}:1.2
 
-      docker push ${aws_ecr_repository.app.repository_url}:1.2
-      EOF
+docker push ${aws_ecr_repository.app.repository_url}:1.2
+EOF
   }
-
   triggers_replace = {
     dockerfile = filesha256("${path.module}/Dockerfile")
     dist = sha256(join("", [
@@ -643,10 +642,10 @@ resource "aws_lambda_function" "reservas" {
 resource "aws_lambda_function" "authorizer" {
   function_name = "paparuta-authorizer"
 
-  role = aws_iam_role.ecs_task_role.arn
+  role = aws_iam_role.lambda_role.arn
 
   runtime = "python3.12"
-  handler = "lambda_function.lambda_handler"
+  handler = "authorizer.lambda_handler"
 
   filename         = "./lambda/lambda.zip"
   source_code_hash = filebase64sha256("./lambda/lambda.zip")
