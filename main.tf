@@ -1,3 +1,45 @@
+## Docker 
+
+resource "aws_ecr_repository" "app" {
+  name = "var.project"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
+resource "terraform_data" "docker_build" {
+  depends_on = [
+    aws_ecr_repository.app
+  ]
+
+  provisioner "local-exec" {
+    command = <<EOF
+      aws ecr get-login-password --region ${data.aws_region.current.name} | \
+      docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com
+
+      docker build -t mi-app .
+
+      docker tag proyecto:1.2 ${aws_ecr_repository.app.repository_url}:1.2
+
+      docker push ${aws_ecr_repository.app.repository_url}:1.2
+      EOF
+  }
+
+  triggers_replace = {
+    dockerfile = filesha256("${path.module}/Dockerfile")
+    dist = sha256(join("", [
+      for f in fileset("${path.module}/frontend/dist", "**") :
+      filesha256("${path.module}/frontend/dist/${f}")
+    ]))
+  }
+}
+
+
 ## Networking
 
 resource "aws_vpc" "main" {
@@ -176,7 +218,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = var.container_image
+      image = "${aws_ecr_repository.app.repository_url}:1.2"
 
       essential = true
 
@@ -343,6 +385,31 @@ resource "aws_apigatewayv2_integration" "lambda" {
   payload_format_version = "2.0"
 }
 
+## TOKEN de seguridad
+resource "aws_lambda_permission" "authorizer" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.authorizer.function_name
+  principal     = "apigateway.amazonaws.com"
+}
+
+resource "aws_apigatewayv2_authorizer" "token" {
+  api_id = aws_apigatewayv2_api.backend.id
+
+  name = "token-authorizer"
+
+  authorizer_type = "REQUEST"
+
+  authorizer_uri = aws_lambda_function.authorizer.invoke_arn
+
+  identity_sources = [
+    "$request.header.Authorization"
+  ]
+
+  authorizer_payload_format_version = "2.0"
+  enable_simple_responses           = true
+}
+
 ## ENDPOINTS RESERVAS
 ## Podria hacer un objeto para cada endpoint y hacer un for each para crearlos.
 
@@ -351,6 +418,9 @@ resource "aws_apigatewayv2_route" "post_reservas" {
 
   route_key = "POST /reservas"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 resource "aws_apigatewayv2_route" "get_reservas" {
@@ -358,6 +428,9 @@ resource "aws_apigatewayv2_route" "get_reservas" {
 
   route_key = "GET /reservas"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 resource "aws_apigatewayv2_route" "getid_reservas" {
@@ -365,6 +438,9 @@ resource "aws_apigatewayv2_route" "getid_reservas" {
 
   route_key = "GET /reservas/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 resource "aws_apigatewayv2_route" "put_reservas" {
@@ -372,6 +448,9 @@ resource "aws_apigatewayv2_route" "put_reservas" {
 
   route_key = "PUT /reservas/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 resource "aws_apigatewayv2_route" "delete_reservas" {
@@ -379,6 +458,9 @@ resource "aws_apigatewayv2_route" "delete_reservas" {
 
   route_key = "DELETE /reservas/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 ## ENDPOINTS RECORRIDOS
@@ -387,6 +469,9 @@ resource "aws_apigatewayv2_route" "post_recorridos" {
 
   route_key = "POST /recorridos"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 resource "aws_apigatewayv2_route" "get_recorridos" {
@@ -394,6 +479,9 @@ resource "aws_apigatewayv2_route" "get_recorridos" {
 
   route_key = "GET /recorridos"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 resource "aws_apigatewayv2_route" "getid_recorridos" {
@@ -401,6 +489,9 @@ resource "aws_apigatewayv2_route" "getid_recorridos" {
 
   route_key = "GET /recorridos/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 resource "aws_apigatewayv2_route" "put_recorridos" {
@@ -408,6 +499,9 @@ resource "aws_apigatewayv2_route" "put_recorridos" {
 
   route_key = "PUT /recorridos/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 resource "aws_apigatewayv2_route" "delete_recorridos" {
@@ -415,6 +509,9 @@ resource "aws_apigatewayv2_route" "delete_recorridos" {
 
   route_key = "DELETE /recorridos/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.token.id
 }
 
 ##
@@ -537,6 +634,20 @@ resource "aws_lambda_function" "reservas" {
     variables = {
       RESERVAS_TABLE   = aws_dynamodb_table.reservas.name
       RECORRIDOS_TABLE = aws_dynamodb_table.recorridos.name
+    }
+  }
+}
+
+resource "aws_lambda_function" "authorizer" {
+  function_name = "paparuta-authorizer"
+
+  role = aws_iam_role.ecs_task_role.arn
+
+  # runtime, role, handler, filename, etc.
+
+  environment {
+    variables = {
+      API_TOKEN = var.api_token
     }
   }
 }

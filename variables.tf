@@ -5,7 +5,7 @@ variable "region" {
 }
 variable "project" {
   type        = string
-  default     = "hito1-leo-emi"
+  default     = "proyecto-leo-emi"
   description = "Nombre del proyecto"
 }
 variable "vpc_cidr" {
@@ -13,6 +13,7 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
   description = "Bloque cidr de la VPC"
 }
+# Deprecated 
 variable "container_image" {
   type        = string
   default     = "585768150938.dkr.ecr.us-east-1.amazonaws.com/hito1:1.1"
@@ -77,4 +78,9 @@ variable "api_domain_name" {
   type        = string
 
   default = "api.maidkissa.moe"
+}
+
+variable "api_token" {
+  type    = string
+  default = "secreto"
 }
