@@ -24,7 +24,7 @@ docker login --username AWS --password-stdin ${data.aws_caller_identity.current.
 
 docker build -t mi-app .
 
-docker tag mi-app:latest ${aws_ecr_repository.app.repository_url}:1.2
+docker tag mi-app:1.2 ${aws_ecr_repository.app.repository_url}:1.2
 
 docker push ${aws_ecr_repository.app.repository_url}:1.2
 EOF
