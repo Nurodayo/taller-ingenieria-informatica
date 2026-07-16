@@ -1,6 +1,8 @@
 import mapa from "../assets/mapa.png";
 import clientes from "../assets/clientes_satisfechos.png";
+import { getRecorridos } from "../../../services/api";
 
+const recorridos = await getRecorridos();
 function Home({ setView }) {
   return (
     <>
@@ -40,7 +42,7 @@ function Home({ setView }) {
           <p>Restaurantes asociados</p>
         </div>
         <div className="stat-card">
-          <h3>4</h3>
+          <h3>{recorridos.length}</h3>
           <p>Recorridos gastronómicos</p>
         </div>
         <div className="stat-card">
@@ -55,8 +57,8 @@ function Home({ setView }) {
       <section className="cta">
         <h2>Explora, fotografía y comparte</h2>
         <p>
-          Nos complace ayudar a familias a encontrar su lugar y ser uno con Papa
-          John's
+          Nos complace ayudar a familias a encontrar su lugar y ser uno con la
+          region
         </p>
         <img src={clientes} alt="Clientes felices" />
       </section>
