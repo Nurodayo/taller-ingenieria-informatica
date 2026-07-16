@@ -10,14 +10,32 @@ function ReservationForm({
 }) {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
-  const [fecha, setFecha] = useState("");
+  // const [fecha, setFecha] = useState("");
+
+  const formatDate = (hour) => {
+    const date = new Date(hour);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const hoy = new Date();
+
+      const fechaActual = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
+
       const reservaCreada = await crearReserva({
         nombre,
         correo,
-        fecha,
+        fecha: fechaActual,
         asientos: 1,
         recorrido: recorrido.id,
       });
@@ -25,7 +43,7 @@ function ReservationForm({
         id: reservaCreada.id,
         nombre,
         correo,
-        fecha,
+        fecha: fechaActual,
         recorrido: recorrido.nombre,
         from: recorrido.from,
         to: recorrido.to,
@@ -39,7 +57,6 @@ function ReservationForm({
       alert("Reserva realizada correctamente.");
       setNombre("");
       setCorreo("");
-      setFecha("");
       onClose();
     } catch (error) {
       console.error(error);
@@ -55,7 +72,7 @@ function ReservationForm({
           <p>
             {recorrido.from} → {recorrido.to}
           </p>
-          <p>{recorrido.hora}</p>
+          <p>{formatDate(recorrido.hora)}</p>
           <p>${recorrido.precio}</p>
         </div>
         <form className="reservation-form" onSubmit={handleSubmit}>
@@ -71,12 +88,6 @@ function ReservationForm({
             placeholder="Correo electrónico"
             value={correo}
             onChange={(e) => setCorreo(e.target.value)}
-            required
-          />
-          <input
-            type="date"
-            value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
             required
           />
           <button type="submit">Confirmar reserva</button>
