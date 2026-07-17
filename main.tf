@@ -368,11 +368,24 @@ resource "aws_apigatewayv2_api" "backend" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_origins  = ["*"] # inseguro
-    allow_methods  = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-    allow_headers  = ["Content-Type", "Authorization"]
-    expose_headers = ["*"]
-    max_age        = 300
+    allow_origins = [
+      "http://proyecto.maidkissa.moe"
+    ]
+
+    allow_methods = [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "OPTIONS"
+    ]
+
+    allow_headers = [
+      "Content-Type",
+      "Authorization"
+    ]
+
+    max_age = 300
   }
 }
 
