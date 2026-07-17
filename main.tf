@@ -22,11 +22,11 @@ resource "terraform_data" "docker_build" {
 aws ecr get-login-password --region ${var.region} | \
 docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com
 
-docker build -t mi-app .
+docker build -t mi-app:1.3 .
 
-docker tag mi-app:1.2 ${aws_ecr_repository.app.repository_url}:1.2
+docker tag mi-app:1.3 ${aws_ecr_repository.app.repository_url}:1.3
 
-docker push ${aws_ecr_repository.app.repository_url}:1.2
+docker push ${aws_ecr_repository.app.repository_url}:1.3
 EOF
   }
   triggers_replace = {
@@ -217,7 +217,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = "${aws_ecr_repository.app.repository_url}:1.2"
+      image = "${aws_ecr_repository.app.repository_url}:1.3"
 
       essential = true
 
