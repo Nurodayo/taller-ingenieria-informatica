@@ -9,8 +9,8 @@ function Hero() {
         <p className="tag">Turismo gastronómico en la X Región</p>
         <h2>Recorre la Región de Los Lagos a través de sus restaurantes</h2>
         <p>
-          Una experiencia ficticia de turismo urbano que conecta la comida,
-          viaje, fotografía y lugares icónicos del sur de Chile.
+          Una experiencia de turismo urbano que conecta la comida, viaje,
+          fotografía y lugares icónicos del sur de Chile.
         </p>
         <a className="button" href="#info">
           Ver más

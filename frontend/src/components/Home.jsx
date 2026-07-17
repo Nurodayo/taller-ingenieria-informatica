@@ -1,9 +1,29 @@
+import { useEffect, useState } from "react";
 import mapa from "../assets/mapa.png";
 import clientes from "../assets/clientes_satisfechos.png";
 import { getRecorridos } from "../../../services/api";
 
-const recorridos = await getRecorridos();
 function Home({ setView }) {
+  const [recorridos, setRecorridos] = useState([]);
+  const [proximoRecorrido, setProximoRecorrido] = useState(null);
+  useEffect(() => {
+    getRecorridos().then((data) => {
+      setRecorridos(data);
+      const ordenados = [...data].sort(
+        (a, b) => new Date(a.hora) - new Date(b.hora),
+      );
+      setProximoRecorrido(ordenados[0]);
+    });
+  }, []);
+  const formatDate = (dateString) => {
+    return new Intl.DateTimeFormat("es-CL", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(dateString));
+  };
   return (
     <>
       <section className="intro" id="info">
@@ -36,6 +56,27 @@ function Home({ setView }) {
           </button>
         </div>
       </section>
+      {proximoRecorrido && (
+        <section className="next-tour-section">
+          <h2>Próxima salida</h2>
+          <div className="next-tour-card">
+            <img src={proximoRecorrido.image} alt={proximoRecorrido.nombre} />
+            <div className="next-tour-info">
+              <h3>{proximoRecorrido.nombre}</h3>
+              <p>
+                {proximoRecorrido.from} → {proximoRecorrido.to}
+              </p>
+              <p>
+                <strong>Salida:</strong> {formatDate(proximoRecorrido.hora)}
+              </p>
+              <p>
+                <strong>Cupos:</strong> {proximoRecorrido.cupos} disponibles
+              </p>
+              <button onClick={() => setView("tours")}>Reservar ahora</button>
+            </div>
+          </div>
+        </section>
+      )}
       <section className="stats-section">
         <div className="stat-card">
           <h3>12+</h3>
@@ -58,12 +99,11 @@ function Home({ setView }) {
         <h2>Explora, fotografía y comparte</h2>
         <p>
           Nos complace ayudar a familias a encontrar su lugar y ser uno con la
-          region
+          gastronomía.
         </p>
         <img src={clientes} alt="Clientes felices" />
       </section>
     </>
   );
 }
-
 export default Home;

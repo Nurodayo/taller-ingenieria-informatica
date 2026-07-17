@@ -32,25 +32,29 @@ function App() {
             </p>
             <Drivers
               driverPhoto={chofer1}
-              driverName={"John Papayon"}
+              driverName={"Cristofer Leiva (克里斯托费尔·维科)"}
               driverInfo={
-                "Experto en rutas gastronómicas y degustación de piczas."
+                "Experto en cultura china y degustación de piczas. Hincha de Colo-Colo."
               }
             />
             <Drivers
               driverPhoto={chofer2}
               driverName={"Andrés Hernández"}
-              driverInfo={"Ingeniero comercial"}
+              driverInfo={
+                "Ingeniero comercial. El ser humano más feliz que el mundo ha conocido."
+              }
             />
             <Drivers
               driverPhoto={chofer3}
-              driverName={"El Pibe"}
-              driverInfo={"Chofer bilingüe (chino)"}
+              driverName={"Pibe"}
+              driverInfo={"Chofer bilingüe (chino mandarín y argentino)"}
             />
             <Drivers
               driverPhoto={chofer4}
               driverName={"El Benja"}
-              driverInfo={"El gran y tradicional Benja"}
+              driverInfo={
+                "El gran Benja. Experto en Puerto Montt y en salmones."
+              }
             />
           </section>
         )}
